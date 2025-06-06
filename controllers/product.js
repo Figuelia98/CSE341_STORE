@@ -1,23 +1,52 @@
 const mongodb = require('../db/connection');
 const { productSchema } = require('../helpers/body_validation');
 const ObjectId = require('mongodb').ObjectId;
-
+const createError = require('http-errors');
+const mongoose = require('mongoose');
 const listProducts = async (req, res, next) => {
   //#swagger.tags=['Product'];
-  const result = await mongodb.getDb().db().collection('Product').find();
-  result.toArray().then((lists) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(lists); 
-  });
+  try{
+     const result = await mongodb.getDb().db().collection('Product').find();
+     if(result){
+      result.toArray().then((lists) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).json(lists); 
+    });
+     }
+     else{
+      throw createError(404, "No product found");
+     }
+    }
+    catch(error){
+     console.log(JSON.stringify(error));
+     
+     next(error);
+    }
 };
 const getProduct = async (req, res, next) => {
    //#swagger.tags=['Product'];
-  const userId = new ObjectId(req.params.id)
-  const result = await mongodb.getDb().db().collection('Product').find({_id:userId});
-  result.toArray().then((user) => {
+  const userId = new ObjectId(req.params.id);
+  try{
+   const result = await mongodb.getDb().db().collection('Product').find({_id:userId});
+   if(result){
+    result.toArray().then((user) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(user[0]);
   });
+   }
+    else{
+      throw createError(404, "No product found");
+     }
+ 
+  }
+  catch(error){
+   console.log(JSON.stringify(error));
+   if(error instanceof mongoose.CastError){
+      next(createError(400,"Invalid employee Id"));
+      return;
+      }
+      next(error);
+  }
 };
 const createProduct = async (req,res)=>{
 //#swagger.tags=['Product'];
@@ -29,15 +58,24 @@ const product = {
   stock: req.body.stock,
   sku: req.body.sku
 }
+try{
  const result = await productSchema.validateAsync(req.body);
-  const response = await mongodb.getDb().db().collection('product').insertOne(product);
-  if(response.acknowledged > 0){
-    res.status(204).send();
-  }
-  else{
-    res.status(500).json(response.error ||"Some error occur while inserting product");
-  }
+ const response = await mongodb.getDb().db().collection('product').insertOne(product);
 
+if(response.acknowledged > 0){
+    res.status(204).send();
+ }
+}
+catch(error){
+if(error.name === 'ValidationError'){
+  next(createError(422,error.message));
+  return;
+}
+next(error)
+  
+}
+
+  
 
 };
 const updateProduct = async (req,res)=>{
@@ -51,26 +89,44 @@ const product = {
   stock: req.body.stock,
   sku: req.body.sku
 }
- const result = await productSchema.validateAsync(req.body);
+try{
+const result = await productSchema.validateAsync(req.body);
   const response = await mongodb.getDb().db().collection('Product').replaceOne({_id:userId},product);
   if(response.modifiedCount > 0){
     res.status(204).send();
   }
-  else{
-    res.status(500).json(response.error ||"Some error occur while updating product ");
-  }
+}
+catch(error){
+if(error.name === 'ValidationError'){
+  next(createError(422,error.message));
+  return;
+}
+next(error)
+}
+ 
 
 };
 const deleteProduct = async (req,res)=>{
 //#swagger.tags=['Product'];
 const userId = new ObjectId(req.params.id)
-  const response = await mongodb.getDb().db().collection('Product').deleteOne({_id:userId});
+
+try{
+   const response = await mongodb.getDb().db().collection('Product').deleteOne({_id:userId});
   if(response.deletedCount > 0){
     res.status(204).send();
   }
   else{
-    res.status(500).json(response.error ||"Some error occur while deleting product");
+    throw createError(404, "No product found");
   }
+}catch(error){
+if(error instanceof mongoose.CastError){
+      next(createError(400,"Invalid employee Id"));
+      return;
+      }
+      next(error);
+}
+ 
+
 };
 
 module.exports = {

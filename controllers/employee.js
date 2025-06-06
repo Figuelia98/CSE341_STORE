@@ -36,7 +36,6 @@ const getEmployee = async (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(user[0]);
   });
-
     }
     else{
       throw  createError(404, "Employee not found");
