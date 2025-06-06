@@ -27,28 +27,25 @@ const listEmployees = async (req, res, next) => {
 };
 const getEmployee = async (req, res, next) => {
    //#swagger.tags=['Employee'];
-  const userId = new ObjectId(req.params.id)
-  try{
+  try {
+    const userId = new ObjectId(req.params.id);
 
-    const result = await mongodb.getDb().db().collection('Employee').find({_id:userId});
-    if(result){
-    result.toArray().then((user) => {
+    const user = await mongodb.getDb().db().collection('Employee').findOne({ _id: userId });
+
+    if (!user) {
+      throw createError(404, 'Employee not found');
+    }
+
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(user[0]);
-  });
-    }
-    else{
-      throw  createError(404, "Employee not found");
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(JSON.stringify(error));
+    
+    if (error instanceof mongoose.CastError || error.name === 'BSONTypeError') {
+      return next(createError(400, 'Invalid employee ID'));
     }
 
-  }
-  catch(error){
-   console.log(JSON.stringify(error));
-   if(error instanceof mongoose.CastError){
-   next(createError(400,"Invalid employee Id"));
-   return;
-   }
-   next(error);
+    next(error);
   }
   
 };
@@ -98,6 +95,9 @@ const employee = {
  try{
  const result = await employeeSchema.validateAsync(req.body);
   const response = await mongodb.getDb().db().collection('Employee').replaceOne({_id:userId},employee);
+  if (!response) {
+      throw createError(404, 'Employee not found');
+  }
   if(response.modifiedCount > 0){
     res.status(204).send();
   }
@@ -118,33 +118,26 @@ const employee = {
 };
 const deleteEmployee = async (req,res,next)=>{
 //#swagger.tags=['Employee'];
-const userId = new ObjectId(req.params.id)
- 
-  
-  try{
+try {
+    const userId = new ObjectId(req.params.id);
 
-     const response = await mongodb.getDb().db().collection('Employee').deleteOne({_id:userId});
-     if(response){
-        if(response.deletedCount > 0){
-            res.status(204).send();
-                }
-        else{
-           throw createError(404, "Employee not found");
-        }
-    
-     }
-     else{
-      throw createError(404, "Employee not found");
-     }
+    const response = await mongodb.getDb().db().collection('Employee').deleteOne({ _id: userId });
 
-  }
-   catch(error){
-   console.log(JSON.stringify(error));
-   if(error instanceof mongoose.CastError){
-   next(createError(400,"Invalid employee Id"));
-   return;
-   }
-   next(error);
+    if (response.deletedCount === 0) {
+      // No employee was deleted because none matched the ID
+      throw createError(404, 'Employee not found');
+    }
+
+    // Success: Employee deleted
+    res.status(204).send(); // 204 = No Content
+  } catch (error) {
+    console.log(JSON.stringify(error));
+
+    if (error instanceof mongoose.CastError || error.name === 'BSONTypeError') {
+      return next(createError(400, 'Invalid employee ID'));
+    }
+
+    next(error);
   }
 };
 
