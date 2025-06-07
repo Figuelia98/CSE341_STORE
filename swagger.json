@@ -5,10 +5,9 @@
     "description": "STORE API project BYU IDAHO Software Development Student",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "cse341-store.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http",
     "https"
   ],
   "paths": {
@@ -276,7 +275,7 @@
                   "example": "number"
                 },
                 "sku": {
-                  "example": "string"
+                  "example": "number"
                 }
               }
             }
