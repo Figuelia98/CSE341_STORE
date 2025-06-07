@@ -5,10 +5,9 @@
     "description": "STORE API project BYU IDAHO Software Development Student",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "cse341-store.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http",
     "https"
   ],
   "paths": {
@@ -40,25 +39,25 @@
               "type": "object",
               "properties": {
                 "firstName": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "lastName": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "email": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "position": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "department": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "salary": {
-                  "example": "any"
+                  "example": "number"
                 },
                 "startDate": {
-                  "example": "any"
+                  "example": "string"
                 }
               }
             }
@@ -113,25 +112,25 @@
               "type": "object",
               "properties": {
                 "firstName": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "lastName": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "email": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "position": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "department": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "salary": {
-                  "example": "any"
+                  "example": "number"
                 },
                 "startDate": {
-                  "example": "any"
+                  "example": "string"
                 }
               }
             }
@@ -191,22 +190,22 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "description": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "price": {
-                  "example": "any"
+                  "example": "number"
                 },
                 "category": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "stock": {
-                  "example": "any"
+                  "example": "number"
                 },
                 "sku": {
-                  "example": "any"
+                  "example": "string"
                 }
               }
             }
@@ -261,22 +260,22 @@
               "type": "object",
               "properties": {
                 "name": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "description": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "price": {
-                  "example": "any"
+                  "example": "number"
                 },
                 "category": {
-                  "example": "any"
+                  "example": "string"
                 },
                 "stock": {
-                  "example": "any"
+                  "example": "number"
                 },
                 "sku": {
-                  "example": "any"
+                  "example": "string"
                 }
               }
             }
